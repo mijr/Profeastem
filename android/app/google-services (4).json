@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "424388424605",
+    "project_id": "stem-a50f3",
+    "storage_bucket": "stem-a50f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424388424605:android:0d71f6add9248c550df574",
+        "android_client_info": {
+          "package_name": "com.migueljunior.PROFAESTEM"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTsm-4twyM-fLAd1kPktgCWQ84cq6d87E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
