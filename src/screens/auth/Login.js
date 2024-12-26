@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet,TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
-import { auth, db } from "../../firebase/firebase"; // Make sure to import your firebase configuration
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase/firebase";
 import ROUTES from "../../../constants/routes";
-
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -16,24 +15,22 @@ const Login = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Email and password are required.");
       return;
     }
-    
-    setLoading(true); // Show loading indicator
+
+    setLoading(true);
     try {
-      // Perform the login
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const { uid } = userCredential.user;
 
-      // Fetch additional user data from Firestore
       const userDoc = await getDoc(doc(db, `users/${uid}`));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        console.log("User data:", userData); // You can process the user data as needed
-        // Alert.alert("Success", "Logged in successfully!");
+        console.log("User data:", userData);
         navigation.navigate(ROUTES.HOME);
       } else {
         Alert.alert("Info", "No additional user data found.");
@@ -41,14 +38,14 @@ const Login = ({ navigation }) => {
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
-      setLoading(false); // Hide loading indicator
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#007BFF" />
       ) : (
         <>
           <Text style={styles.title}>Login</Text>
@@ -60,34 +57,33 @@ const Login = ({ navigation }) => {
             value={email}
             onChangeText={setEmail}
           />
-          <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={!isPasswordVisible} // Conditionally set secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {/* <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
-        <Icon
-          name={isPasswordVisible ? 'eye-off' : 'eye'}
-          size={24}
-          color="#000"
-        />
-      </TouchableOpacity> */}
-          <Button title="Login" onPress={handleLogin} color="#007BFF" />
-          {/* <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}> Create new account </Text>
-            <Button
-              title="Sign Up"
-              onPress={() => navigation.navigate(ROUTES.SIGNUP)}
-              color=""
+           <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry={!isPasswordVisible}
+              value={password}
+              onChangeText={setPassword}
             />
-          </View> */}
+            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+              <Icon
+                name={isPasswordVisible ? 'eye-off' : 'eye'}
+                size={24}
+                color="#007BFF"
+              />
+            </TouchableOpacity>
+          </View>
+          <Button title="Login" onPress={handleLogin} color="#007BFF" />
+          
+          <TouchableOpacity onPress={() => navigation.navigate(ROUTES.FORGOT_PASSWORD)} style={styles.forgotPassword}>
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
           <View style={styles.footer}>
-                        <TouchableOpacity onPress={() => navigation.navigate(ROUTES.SIGNUP)}>
-                            <Text style={{ color: 'black', fontSize: 15 }}>Don't have any account? Sign Up</Text>
-                        </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => navigation.navigate(ROUTES.SIGNUP)}>
+              <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.homeLink}>
             <Button
               title="Go to Home"
@@ -115,34 +111,46 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     color: "#333",
   },
-  pass:{
-    fontFamily:["poppins-semiBold"],
-              fontSize:12,
-              color:'#0000FF',
-              alignSelf: "flex-end",
-  },
   input: {
     width: "100%",
     padding: 12,
-    marginVertical: 20,
+    marginVertical: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#007BFF",
     borderRadius: 8,
     backgroundColor: "#ffffff",
   },
-  signUpContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 16,
+  icon: {
+    alignSelf: "flex-end",
+    marginBottom: 10,
+  },
+  forgotPassword: {
+    marginVertical: 10,
+  },
+  forgotPasswordText: {
+    color: "#007BFF",
+    textDecorationLine: "underline",
   },
   signUpText: {
-    color: "#FFC0CB",
-    margin: 10, marginBottom: 0
+    color: "#007BFF",
+    textAlign: "center",
+  },
+  footer: {
+    marginTop: 20,
   },
   homeLink: {
     marginTop: 8,
   },
-  
+  passwordContainer: {
+    width: "100%",
+    position: "relative", // Allows absolute positioning of the icon
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    zIndex: 1, // Make sure the icon is above the input field
+  },
 });
 
 export default Login;
